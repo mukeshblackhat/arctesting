@@ -1,0 +1,33 @@
+name: Harden Runner Block Hosted
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    name: ARCHardenRunner
+    runs-on: ubuntu-latest
+    steps:
+     - name: Harden Runner
+       uses: step-security/harden-runner@int
+       with:
+          egress-policy: block
+          allowed-endpoints: >
+           *.github.com:443
+           github.com:443
+           ghcr.io:443
+           production.cloudflare.docker.com:443
+           *.docker.io:443
+           registry.npmjs.org:443
+           *.actions.githubusercontent.com:443
+           youtube.com:443
+           *.google.com:443
+           google.com:443
+     - run: "curl --connect-timeout 5  https://google.com -L"
+     - run: "curl --connect-timeout 5  https://twitter.com -L"   
+     - run: "dig google.com"
+     - uses: actions/checkout@v3
+     - name: File Overwrite with mv
+       run: |
+         code='package main\n\nfunc main(){\nprintln("code added")\n}'
+         printf "$code" > main1.go
+         mv main1.go main.go
+     - run: curl --connect-timeout 5 -L http://microsoft.com
